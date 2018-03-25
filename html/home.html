@@ -1,0 +1,83 @@
+<div class = "container">
+    <div class = "row">
+        <div class = "col-md-12">
+            <div class = "container">
+                <h1>Конструктор форм</h1>
+                <div class = "row">
+                    <div class = "col-md-8">
+                        <div class = "box box-info">
+                            <div class="box-header with-border"><h3 class="box-title">Заполните все поля</h3></div>
+                                <form class="form-horizontal">
+                                    <div class="box-body" id="box-body">
+                                        <div class="form-group">
+                                            <label for="title-input" class="col-md-4">Название формы</label>
+                                            <div class="col-md-8">
+                                                <input v-model = "form.title"
+                                                       type = "text" class = "form-control" id = "title-input" name = "title"
+                                                            placeholder = "Введите название формы">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="title-input" class="col-md-4">Описание формы</label>
+                                            <div class="col-md-8">
+                                                <input v-model = "form.description"
+                                                       type = "text"  class = "form-control" id = "description-input" name = "description"
+                                                            placeholder = "Введите описание формы">
+                                            </div>
+                                        </div>
+                                        <div class="form-group" v-if = "formCheck"  v-for = '(item, index) in form.questions'>
+                                            <label class="col-md-4">Выберите тип вопроса</label>
+                                            <div class="col-md-8">
+                                                <select class="form-control" name="category" v-model="form.questions[index].type">
+                                                    <option value="text">Строка</option>
+                                                    <option value="textarea">Абзац</option>
+                                                    <option value="radio">Один из списка</option>
+                                                    <option value="checkbox">Несколько из списка</option>
+                                                    <option value="select">Расскрывающийся список</option>
+                                                </select>
+                                            </div>
+                                            <span v-if = "form.questions[index].type"><label class="col-md-4 question">Введите вопрос<span class="delete-icon" @click="deleteQuestion(index)"></span></label></span>
+                                        <div class="col-md-8 question" v-if = "form.questions[index].type">
+                                            <input class = "form-control" v-model = 'form.questions[index].question'>
+                                        </div>
+                                            <div class = "variants col-md-12">
+                                        <div class="variant col-md-8" v-if = "form.questions[index].type
+                                            &&(form.questions[index].type==='select'
+                                            ||form.questions[index].type==='radio'
+                                            ||form.questions[index].type==='checkbox')"
+                                            v-for = '(vItem, vIndx) in item.variants'>
+                                        <label class="col-md-6">Введите вариант <span class="delete-icon" @click="deleteVariant(index,vIndx)"></span></label>
+                                        <div class="col-md-6">
+                                            <input  class = "form-control" v-model = 'form.questions[index].variants[vIndx].variant'>
+                                        </div>
+                                        </div>
+                                            <button class="col-md-4 btn btn-info" @click = "addVariant($event, index)" v-if="form.questions[index].type==='select'
+                                            ||form.questions[index].type==='radio'
+                                            ||form.questions[index].type==='checkbox'">Добавить еще варианты</button>
+                                        </div>
+                                        </div>
+                                    <button @click = "addQuestions($event)" v-if="formCheck" class = "btn btn-primary">Добавить вопрос</button>
+                                    </div>
+                                    <div class = "box-footer">
+                                        <button class = "btn btn-success" @click = "setForm($event)" v-if = 'form.questions.length'>Завершить настройку Формы</button>
+                                    </div>
+                                </form>
+
+                                <form v-show = "$store.state.form.title&&this.form.questions.length">
+                                    <h2>Предварительный просмотр</h2>
+
+                                    <h3><router-link to="form">Посмотреть готовую форму</router-link></h3>
+                                    <div class="box-header with-border" >
+                                        <div>{{form.title}}</div>
+                                        <div>{{form.description}}</div>
+                                    </div>
+                                    <div class="box-body" id="box-body-2">
+                                    </div>
+                                </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
