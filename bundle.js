@@ -61,7 +61,7 @@ var vm =
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 3);
+/******/ 	return __webpack_require__(__webpack_require__.s = 6);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -10837,7 +10837,7 @@ function getOuterHTML(el) {
 
 Vue$3.compile = compileToFunctions;
 /* harmony default export */ __webpack_exports__["a"] = (Vue$3);
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1), __webpack_require__(2), __webpack_require__(4).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1), __webpack_require__(2), __webpack_require__(7).setImmediate))
 
 /***/ }),
 /* 1 */
@@ -11080,14 +11080,194 @@ module.exports = g;
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__html_home_html__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__html_home_html___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__html_home_html__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__helpers_formRender__ = __webpack_require__(4);
+
+
+
+/* harmony default export */ __webpack_exports__["a"] = ({
+  template: __WEBPACK_IMPORTED_MODULE_1__html_home_html___default.a,
+
+  data() {
+    return {
+      form: {
+        title: '',
+        description: '',
+        questions: []
+      },
+      questionIndex: 0,
+      variantValue: 0
+    };
+  },
+
+  methods: {
+    deleteQuestion(index) {
+      this.form.questions.splice(index, 1);
+    },
+
+    deleteVariant(index, variantIndex) {
+      return this.form.questions[index].variants.splice(index, 1);
+    },
+
+    setForm(e) {
+      e.preventDefault(e);
+      this.$store.dispatch({
+        type: 'GET_FORM',
+        form: this.form
+      });
+      return Object(__WEBPACK_IMPORTED_MODULE_2__helpers_formRender__["a" /* default */])(this.$store.state, 'box-body-2');
+    },
+
+    createForm() {
+      return this.createFormFlag = true;
+    },
+
+    addQuestions(e) {
+      e.preventDefault(e);
+      let q = {
+        question: '',
+        type: '',
+        name: '',
+        variants: [{
+          variant: '',
+          value: ''
+        }]
+      };
+      this.form.questions.push(q); //добавляем объект в хранилище компонента
+
+      this.form.questions.forEach((item, index) => {
+        item.name = 'question-' + index;
+      }); //присваиваем каждому объекту уникальный атрибут name
+    },
+
+    addVariant(e, index) {
+      e.preventDefault(e);
+      let v = {
+        variant: '',
+        value: ''
+      };
+      this.form.questions[index].variants.push(v);
+      this.form.questions[index].variants.forEach((item, index) => {
+        item.value = 'variant-' + index;
+      });
+    }
+
+  },
+  computed: {
+    formCheck() {
+      if (this.form.title.length && this.form.description.length) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+  }
+});
+
+/***/ }),
+/* 4 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["a"] = formRender;
+function formRender(store, Idelem) {
+  const domElem = document.getElementById(Idelem);
+
+  if (store.form.questions) {
+    store.form.questions.forEach(question => {
+      const div = document.createElement('div'); //создаем блок form-group
+
+      const label = document.createElement('label'); //создаем блок с названием вопроса label
+
+      const div_8 = document.createElement('div'); //создаем блок, задающий ширину полю
+
+      label.innerHTML = `${question.question}`;
+      div.className = 'form-group';
+      label.className = 'col-sm-4';
+      div_8.className = 'col-sm-8';
+
+      if (question.type === 'number' || question.type === 'text' || question.type === 'textarea') {
+        const input = document.createElement(question.type === 'textarea' ? 'textarea' : 'input'); //input, может быть любым полем, которое принимает значение
+
+        input.setAttribute('type', question.type);
+        input.setAttribute('placeholder', question.type === 'text' || question.type === 'textarea' ? 'Введите текст' : 'Введите число');
+        input.className = 'form-control';
+        input.setAttribute('id', question.name);
+        input.setAttribute('name', question.name);
+        div_8.appendChild(input);
+      } else if (question.type === 'checkbox' || question.type === 'radio') {
+        question.variants.forEach(variant => {
+          const input = document.createElement('input');
+          const divButton = document.createElement('div');
+          const labelButton = document.createElement('label');
+          const variantTextNode = document.createTextNode(variant.variant);
+          divButton.className = question.type;
+          input.setAttribute('type', question.type);
+          input.setAttribute('name', question.name);
+          input.setAttribute('value', true);
+          labelButton.appendChild(input);
+          labelButton.appendChild(variantTextNode);
+          divButton.appendChild(labelButton);
+          div_8.appendChild(divButton);
+        });
+      } else if (question.type === 'select') {
+        const select = document.createElement('select');
+        select.className = 'form-control';
+        select.setAttribute('name', question.name);
+        question.variants.forEach(variant => {
+          const option = document.createElement('option');
+          const variantTextNode = document.createTextNode(variant.variant);
+          option.setAttribute('value', variant.value);
+          option.appendChild(variantTextNode);
+          select.appendChild(option);
+        });
+        div_8.appendChild(select);
+      }
+
+      div.appendChild(label);
+      div.appendChild(div_8);
+      domElem.appendChild(div);
+    });
+  }
+}
+
+/***/ }),
+/* 5 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__html_form_html__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__html_form_html___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__html_form_html__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__helpers_formRender__ = __webpack_require__(4);
+
+
+
+/* harmony default export */ __webpack_exports__["a"] = ({
+  template: __WEBPACK_IMPORTED_MODULE_1__html_form_html___default.a,
+
+  mounted() {
+    Object(__WEBPACK_IMPORTED_MODULE_2__helpers_formRender__["a" /* default */])(this.$store.state, 'box-body');
+  }
+
+});
+
+/***/ }),
+/* 6 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "vm", function() { return vm; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vue_router__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_vue_resource__ = __webpack_require__(7);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__store__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__routes__ = __webpack_require__(14);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__components_App__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vue_router__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_vue_resource__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__store__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__routes__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__components_App__ = __webpack_require__(20);
 
 
 
@@ -11112,7 +11292,7 @@ var vm = new __WEBPACK_IMPORTED_MODULE_0_vue__["a" /* default */]({
 
 
 /***/ }),
-/* 4 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var apply = Function.prototype.apply; // DOM APIs, for completeness
@@ -11165,7 +11345,7 @@ exports._unrefActive = exports.active = function (item) {
 }; // setimmediate attaches itself to the global object
 
 
-__webpack_require__(5); // On some exotic environments, it's not clear which object `setimmeidate` was
+__webpack_require__(8); // On some exotic environments, it's not clear which object `setimmeidate` was
 // able to install onto.  Search each possibility in the same order as the
 // `setimmediate` library.
 
@@ -11175,7 +11355,7 @@ exports.clearImmediate = typeof self !== "undefined" && self.clearImmediate || t
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 5 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -11382,7 +11562,7 @@ exports.clearImmediate = typeof self !== "undefined" && self.clearImmediate || t
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(1)))
 
 /***/ }),
-/* 6 */
+/* 9 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -13954,7 +14134,7 @@ if (inBrowser && window.Vue) {
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
-/* 7 */
+/* 10 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -15008,7 +15188,7 @@ function xhrClient(request) {
 
 
 function nodeClient(request) {
-  var client = __webpack_require__(8);
+  var client = __webpack_require__(11);
 
   return new PromiseObj(function (resolve) {
     var url = request.getUrl();
@@ -15454,21 +15634,21 @@ if (typeof window !== 'undefined' && window.Vue) {
 
 
 /***/ }),
-/* 8 */
+/* 11 */
 /***/ (function(module, exports) {
 
 /* (ignored) */
 
 /***/ }),
-/* 9 */
+/* 12 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__state__ = __webpack_require__(11);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__actions__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__mutations__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__state__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__actions__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__mutations__ = __webpack_require__(16);
 
 
 
@@ -15482,7 +15662,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue__["a" /* default */].use(__WEBPACK_IMPORTED_MODU
 }));
 
 /***/ }),
-/* 10 */
+/* 13 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -16503,56 +16683,13 @@ var index_esm = {
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
-/* 11 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony default export */ __webpack_exports__["a"] = ({
-  events: []
-});
-
-/***/ }),
-/* 12 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(0);
-
-/* harmony default export */ __webpack_exports__["a"] = ({
-  GET_EVENTS(context) {
-    let get = '/db/events.json';
-    __WEBPACK_IMPORTED_MODULE_0_vue__["a" /* default */].http.get(get).then(response => {
-      context.commit('SET_EVENTS', response.data);
-    });
-  }
-
-});
-
-/***/ }),
-/* 13 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony default export */ __webpack_exports__["a"] = ({
-  SET_EVENTS(state, events) {
-    state.events = events;
-  }
-
-});
-
-/***/ }),
 /* 14 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_pages_home__ = __webpack_require__(15);
- // тут мы декларируем все роуты приложения (какие компоненты за какие адреса отвечают)
-
-/* harmony default export */ __webpack_exports__["a"] = ([{
-  name: '/',
-  component: __WEBPACK_IMPORTED_MODULE_0__components_pages_home__["a" /* default */],
-  path: '/'
-}]);
+/* harmony default export */ __webpack_exports__["a"] = ({
+  form: {}
+});
 
 /***/ }),
 /* 15 */
@@ -16560,52 +16697,108 @@ var index_esm = {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__html_home_html__ = __webpack_require__(16);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__html_home_html___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__html_home_html__);
 
-
-/* harmony default export */ __webpack_exports__["a"] = (__WEBPACK_IMPORTED_MODULE_0_vue__["a" /* default */].component('Home', {
-  template: __WEBPACK_IMPORTED_MODULE_1__html_home_html___default.a,
-  data: function () {
-    return {
-      rows: 60 * 10
-    };
-  },
-  created: function () {
-    this.getEvents();
-  },
-  methods: {
-    getEvents: function () {
-      return this.$store.dispatch('GET_EVENTS');
-    }
+/* harmony default export */ __webpack_exports__["a"] = ({
+  GET_FORM(context, form) {
+    context.commit('SET_FORM', form.form);
   }
-}));
+
+});
 
 /***/ }),
 /* 16 */
-/***/ (function(module, exports) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-module.exports = "<div>\n    <table>\n        <tr v-for=\"rows\"></tr>\n    </table>\n</div>";
+"use strict";
+/* harmony default export */ __webpack_exports__["a"] = ({
+  SET_FORM(state, form) {
+    state.form = form;
+  }
+
+});
 
 /***/ }),
 /* 17 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__html_App_html__ = __webpack_require__(18);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__html_App_html___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__html_App_html__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_pages_home__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_pages_form__ = __webpack_require__(5);
 
+ // тут мы декларируем все роуты приложения (какие компоненты за какие адреса отвечают)
 
-/* harmony default export */ __webpack_exports__["a"] = (__WEBPACK_IMPORTED_MODULE_0_vue__["a" /* default */].component('app', {
-  template: __WEBPACK_IMPORTED_MODULE_1__html_App_html___default.a
-}));
+/* harmony default export */ __webpack_exports__["a"] = ([{
+  name: 'home',
+  component: __WEBPACK_IMPORTED_MODULE_0__components_pages_home__["a" /* default */],
+  path: '/'
+}, {
+  name: 'form',
+  component: __WEBPACK_IMPORTED_MODULE_1__components_pages_form__["a" /* default */],
+  path: '/form'
+}]);
 
 /***/ }),
 /* 18 */
 /***/ (function(module, exports) {
 
-module.exports = "<router-view></router-view>";
+module.exports = "<div class = \"container\">\n    <div class = \"row\">\n        <div class = \"col-md-12\">\n            <div class = \"container\">\n                <h1>Конструктор форм</h1>\n                <div class = \"row\">\n                    <div class = \"col-md-8\">\n                        <div class = \"box box-info\">\n                            <div class=\"box-header with-border\"><h3 class=\"box-title\">Заполните все поля</h3></div>\n                                <form class=\"form-horizontal\">\n                                    <div class=\"box-body\" id=\"box-body\">\n                                        <div class=\"form-group\">\n                                            <label for=\"title-input\" class=\"col-md-4\">Название формы</label>\n                                            <div class=\"col-md-8\">\n                                                <input v-model = \"form.title\"\n                                                       type = \"text\" class = \"form-control\" id = \"title-input\" name = \"title\"\n                                                            placeholder = \"Введите название формы\">\n                                            </div>\n                                        </div>\n                                        <div class=\"form-group\">\n                                            <label for=\"title-input\" class=\"col-md-4\">Описание формы</label>\n                                            <div class=\"col-md-8\">\n                                                <input v-model = \"form.description\"\n                                                       type = \"text\"  class = \"form-control\" id = \"description-input\" name = \"description\"\n                                                            placeholder = \"Введите описание формы\">\n                                            </div>\n                                        </div>\n                                        <div class=\"form-group\" v-if = \"formCheck\"  v-for = '(item, index) in form.questions'>\n                                            <label class=\"col-md-4\">Выберите тип вопроса</label>\n                                            <div class=\"col-md-8\">\n                                                <select class=\"form-control\" name=\"category\" v-model=\"form.questions[index].type\">\n                                                    <option value=\"text\">Строка</option>\n                                                    <option value=\"textarea\">Абзац</option>\n                                                    <option value=\"radio\">Один из списка</option>\n                                                    <option value=\"checkbox\">Несколько из списка</option>\n                                                    <option value=\"select\">Расскрывающийся список</option>\n                                                </select>\n                                            </div>\n                                            <span v-if = \"form.questions[index].type\"><label class=\"col-md-4 question\">Введите вопрос<span class=\"delete-icon\" @click=\"deleteQuestion(index)\"></span></label></span>\n                                        <div class=\"col-md-8 question\" v-if = \"form.questions[index].type\">\n                                            <input class = \"form-control\" v-model = 'form.questions[index].question'>\n                                        </div>\n                                            <div class = \"variants col-md-12\">\n                                        <div class=\"variant col-md-8\" v-if = \"form.questions[index].type\n                                            &&(form.questions[index].type==='select'\n                                            ||form.questions[index].type==='radio'\n                                            ||form.questions[index].type==='checkbox')\"\n                                            v-for = '(vItem, vIndx) in item.variants'>\n                                        <label class=\"col-md-6\">Введите вариант <span class=\"delete-icon\" @click=\"deleteVariant(index,vIndx)\"></span></label>\n                                        <div class=\"col-md-6\">\n                                            <input  class = \"form-control\" v-model = 'form.questions[index].variants[vIndx].variant'>\n                                        </div>\n                                        </div>\n                                            <button class=\"col-md-4 btn btn-info\" @click = \"addVariant($event, index)\" v-if=\"form.questions[index].type==='select'\n                                            ||form.questions[index].type==='radio'\n                                            ||form.questions[index].type==='checkbox'\">Добавить еще варианты</button>\n                                        </div>\n                                        </div>\n                                    <button @click = \"addQuestions($event)\" v-if=\"formCheck\" class = \"btn btn-primary\">Добавить вопрос</button>\n                                    </div>\n                                    <div class = \"box-footer\">\n                                        <button class = \"btn btn-success\" @click = \"setForm($event)\" v-if = 'form.questions.length'>Завершить настройку Формы</button>\n                                    </div>\n                                </form>\n\n                                <form v-show = \"$store.state.form.title&&this.form.questions.length\">\n                                    <h2>Предварительный просмотр</h2>\n\n                                    <h3><router-link to=\"form\">Посмотреть готовую форму</router-link></h3>\n                                    <div class=\"box-header with-border\" >\n                                        <div>{{form.title}}</div>\n                                        <div>{{form.description}}</div>\n                                    </div>\n                                    <div class=\"box-body\" id=\"box-body-2\">\n                                    </div>\n                                </form>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>";
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports) {
+
+module.exports = "<div class=\"container\">\n    <div class = \"row\">\n        <div class = \"col-md-12\">\n            <div class = \"container\">\n                <div class = \"row\">\n                    <div class = \"col-md-8\">\n                        <h1>Пример готовой формы</h1>\n                        <div class = \"box box-info\">\n                            <div class=\"box-header with-border\">\n                                <h3>{{$store.state.form.title}}</h3>\n                                <h5>{{$store.state.form.description}}</h5>\n                            </div>\n                            <form class = \"form-horizontal\">\n                                <div class=\"box-body\" id=\"box-body\"></div>\n                                <div class=\"box-footer\">\n                                    <button type=\"submit\" class=\"btn btn-success pull-right\">\n                                        Отправить <span class=\"button-check\"></span></button>\n                                </div>\n                            </form>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>";
+
+/***/ }),
+/* 20 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__html_App_html__ = __webpack_require__(21);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__html_App_html___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__html_App_html__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__pages_home__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__pages_form__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__navigation__ = __webpack_require__(22);
+
+
+
+
+
+/* harmony default export */ __webpack_exports__["a"] = (__WEBPACK_IMPORTED_MODULE_0_vue__["a" /* default */].component('app', {
+  template: __WEBPACK_IMPORTED_MODULE_1__html_App_html___default.a,
+  components: {
+    Home: __WEBPACK_IMPORTED_MODULE_2__pages_home__["a" /* default */],
+    Form: __WEBPACK_IMPORTED_MODULE_3__pages_form__["a" /* default */],
+    Navigation: __WEBPACK_IMPORTED_MODULE_4__navigation__["a" /* default */]
+  }
+}));
+
+/***/ }),
+/* 21 */
+/***/ (function(module, exports) {
+
+module.exports = "<div>\n    <Navigation></Navigation>\n    <router-view></router-view>\n</div>\n\n\n\n";
+
+/***/ }),
+/* 22 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__html_navigation_html__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__html_navigation_html___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__html_navigation_html__);
+
+
+/* harmony default export */ __webpack_exports__["a"] = (__WEBPACK_IMPORTED_MODULE_0_vue__["a" /* default */].component('Navigation', {
+  template: __WEBPACK_IMPORTED_MODULE_1__html_navigation_html___default.a
+}));
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports) {
+
+module.exports = "<header class=\"main-header\">\n    <router-link to=\"/\" class=\"logo\">\n        <span class=\"logo-mini\"></span>\n        <span class=\"logo-lg\"><b>Конструктор форм</b></span>\n    </router-link>\n    <nav class=\"navbar navbar-static-top\">\n\n        <div class=\"navbar-custom-menu\">\n            <ul class=\"nav navbar-nav\">\n                <li>\n                    <router-link to=\"form\">Посмотреть форму</router-link>\n                </li>\n            </ul>\n        </div>\n    </nav>\n</header>";
 
 /***/ })
 /******/ ]);
